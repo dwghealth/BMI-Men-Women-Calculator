@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI Calculator</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f9fd;
+    margin: 0;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+  }
+
+  .container {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 25px;
+    width: 360px;
+  }
+
+  .card h2 {
+    background: linear-gradient(90deg, #007b8e, #0a357a);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 20px;
+  }
+
+  .tabs, .genderTabs {
+    display: flex;
+    margin-top: 20px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .tabs button, .genderTabs button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    background: #e6f2f7;
+    font-size: 15px;
+  }
+
+  .tabs button.active, .genderTabs button.active {
+    background: #007b8e;
+    color: white;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 500;
+  }
+
+  select, input {
+    padding: 8px;
+    margin-top: 5px;
+    width: 80px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  .btn {
+    background: linear-gradient(90deg, #007b8e, #0a357a);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn:hover {
+    opacity: 0.9;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+  }
+
+  th {
+    background: #0a357a;
+    color: white;
+  }
+
+  .result {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- BMI CALCULATOR -->
+    <div class="card">
+      <h2>BMI CALCULATOR</h2>
+
+      <!-- Gender Tabs -->
+      <div class="genderTabs">
+        <button id="menBtn" class="active" onclick="switchGender('men')">Men</button>
+        <button id="womenBtn" onclick="switchGender('women')">Women</button>
+      </div>
+
+      <!-- Unit Tabs -->
+      <div class="tabs">
+        <button id="standardBtn" class="active" onclick="switchUnit('standard')">Standard</button>
+        <button id="metricBtn" onclick="switchUnit('metric')">Metric</button>
+      </div>
+
+      <!-- FORMS -->
+      <div id="standardForm">
+        <label>Height</label>
+        <select id="feet">
+          <option>4</option><option selected>5</option><option>6</option><option>7</option>
+        </select> Feet
+        <select id="inches">
+          <option>0</option><option>2</option><option selected>4</option><option>6</option><option>8</option><option>10</option><option>11</option>
+        </select> Inches
+
+        <label>Weight</label>
+        <input type="number" id="kgStandard" placeholder="Enter weight in kg"> Kg
+
+        <button class="btn" onclick="calculateStandardBMI()">Calculate Your BMI</button>
+        <div class="result" id="standardResult"></div>
+      </div>
+
+      <div id="metricForm" style="display:none;">
+        <label>Height (cm)</label>
+        <input type="number" id="cm" placeholder="Enter height in cm">
+
+        <label>Weight (kg)</label>
+        <input type="number" id="kg" placeholder="Enter weight in kg">
+
+        <button class="btn" onclick="calculateMetricBMI()">Calculate Your BMI</button>
+        <div class="result" id="metricResult"></div>
+      </div>
+    </div>
+
+    <!-- BMI CATEGORY -->
+    <div class="card">
+      <h2>BMI CATEGORIES</h2>
+      <table>
+        <tr><th>BMI Category</th><th>BMI Range</th></tr>
+        <tr><td>Underweight</td><td>Below 18.5</td></tr>
+        <tr><td>Healthy</td><td>18.5 – 24.9</td></tr>
+        <tr><td>Overweight</td><td>25.0 – 29.9</td></tr>
+        <tr><td>Obesity</td><td>30.0 or above</td></tr>
+      </table>
+    </div>
+
+  </div>
+
+<script>
+let currentGender = 'men';
+let currentUnit = 'standard';
+
+function switchGender(gender) {
+  currentGender = gender;
+  document.getElementById('menBtn').classList.toggle('active', gender === 'men');
+  document.getElementById('womenBtn').classList.toggle('active', gender === 'women');
+}
+
+function switchUnit(unit) {
+  currentUnit = unit;
+  document.getElementById('standardForm').style.display = (unit === 'standard') ? 'block' : 'none';
+  document.getElementById('metricForm').style.display = (unit === 'metric') ? 'block' : 'none';
+  document.getElementById('standardBtn').classList.toggle('active', unit === 'standard');
+  document.getElementById('metricBtn').classList.toggle('active', unit === 'metric');
+}
+
+function calculateStandardBMI() {
+  const feet = parseInt(document.getElementById('feet').value);
+  const inches = parseInt(document.getElementById('inches').value);
+  const weightKg = parseFloat(document.getElementById('kgStandard').value);
+  if (!feet || !weightKg) {
+    document.getElementById('standardResult').innerHTML = "⚠️ Please enter valid values.";
+    return;
+  }
+
+  const totalInches = (feet * 12) + inches;
+  const heightMeters = totalInches * 0.0254;
+  const bmi = weightKg / (heightMeters * heightMeters);
+  displayResult(bmi, 'standardResult');
+}
+
+function calculateMetricBMI() {
+  const cm = parseFloat(document.getElementById('cm').value);
+  const kg = parseFloat(document.getElementById('kg').value);
+  if (!cm || !kg) {
+    document.getElementById('metricResult').innerHTML = "⚠️ Please enter valid values.";
+    return;
+  }
+
+  const meters = cm / 100;
+  const bmi = kg / (meters * meters);
+  displayResult(bmi, 'metricResult');
+}
+
+function displayResult(bmi, elementId) {
+  let category = '';
+  let color = '';
+  let genderLabel = currentGender === 'men' ? 'Men' : 'Women';
+
+  // BMI Category
+  if (bmi < 18.5) { category = 'Underweight'; color = 'orange'; }
+  else if (bmi < 25) { category = 'Healthy'; color = 'green'; }
+  else if (bmi < 30) { category = 'Overweight'; color = '#e0a800'; }
+  else { category = 'Obese'; color = 'red'; }
+
+  // Slight gender tone note (for future customization)
+  let genderNote = currentGender === 'men' ? "Ideal BMI for men: 20–25" : "Ideal BMI for women: 19–24";
+
+  document.getElementById(elementId).innerHTML =
+    `Your BMI (<b>${genderLabel}</b>): <b style="color:${color}">${bmi.toFixed(1)}</b> (${category})<br><small>${genderNote}</small>`;
+}
+</script>
+</body>
+</html>
